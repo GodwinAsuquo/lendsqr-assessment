@@ -1,10 +1,10 @@
-// import { settingsItems, navItems } from '../../utils/constants';
-// import { useLocation, useNavigate } from 'react-router-dom';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
-import profileImage from '@/assets/images/profileimage.png';
-// import { IoIosArrowUp } from 'react-icons/io';
-import { useState } from 'react';
-import CustomModal from '@/components/shared/CustomModal';
+import { useState } from "react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { IoChevronDownOutline } from "react-icons/io5";
+import { HiOutlineHome, HiOutlineLogout } from "react-icons/hi";
+import { FaBriefcase } from "react-icons/fa";
+import { navItems, PRIVATE_PATHS } from "@/utils/constants";
+import { ChevronLeft } from "lucide-react";
 
 interface SideNavProps {
   isCollapsed: boolean;
@@ -12,209 +12,212 @@ interface SideNavProps {
 }
 
 const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
-  // const navigate = useNavigate();
-  // const location = useLocation();
-  // const [openIndex, setOpenIndex] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  // const [settingsHoveredIndex, setSettingsHoveredIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  const handleLogout = ()=> {
-    console.log('Logged out successfully ');
+  const handleLogout = () => {
+    if (window.innerWidth < 1024) {
+      setIsCollapsed(true);
+    }
+    navigate("/signin");
   };
 
+  // Group navigation items by category
+  const groupedNavItems = navItems.reduce((acc, item) => {
+    const category = item.category || "OTHER";
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(item);
+    return acc;
+  }, {} as Record<string, typeof navItems>);
+
   return (
-    <aside
-      className={`fixed left-0 top-0 z-40 bg-[#F3F9FD] h-screen ml-5 mt-5 rounded-xl  flex flex-col
-        transition-all duration-300 ease-in-out
-        ${isCollapsed ? "w-[70px] px-2" : "w-[280px] px-4"}`}
-    >
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-4 top-12 bg-primary border  border-primary rounded-lg p-1.5 cursor-pointer"
-        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+    <>
+      {/* Overlay for mobile */}
+      {!isCollapsed && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setIsCollapsed(true)}
+        />
+      )}
+
+      <aside
+        className={`fixed z-50 lg:z-0 left-0 top-0 bg-white h-screen shadow-xl flex flex-col
+          transition-all duration-300 ease-in-out
+          ${isCollapsed ? "w-0 lg:w-[70px]" : "w-[283px]"}
+          ${
+            !isCollapsed
+              ? "translate-x-0"
+              : "-translate-x-full lg:translate-x-0"
+          }`}
       >
-        {isCollapsed ? (
-          <MdChevronRight className="w-4 h-4 text-white" />
-        ) : (
-          <MdChevronLeft className="w-4 h-4 text-white" />
-        )}
-      </button>
-
-      <div className="text-center mt-10">
-        <img src={profileImage} alt="profile image" className="w-20 mx-auto" />
-        <div className={`${isCollapsed ? "hidden" : ""}`}>
-          <p className="text-primary font-semibold">Administrator</p>
-        </div>
-      </div>
-
-      <hr className="border border-primary mt-8" />
-
-      <nav className="flex-1 overflow-y-auto pb-16 mt-2 scrollbar-hide">
-        <p
-          className={`text-black/50 text-sm mt-7 ${
-            isCollapsed ? "hidden" : "pl-3"
+        {/* Switch Organization Dropdown */}
+        <div
+          className={`relative mt-10 lg:mt-28  mb-6 ${
+            isCollapsed ? "hidden" : "block"
           }`}
         >
-          MAIN
-        </p>
-        {/* <ul className={` text-sm mt-3 space-y-2`}>
-          {navItems.map((item, i) => (
-            <li key={i}>
-              <button
-                onClick={() => {
-                  navigate(item.path);
-                  setOpenIndex(i === openIndex ? -1 : i);
-                  setIsCollapsed(false);
-                  if (item.name === "Blogs") {
-                    window.open("https://glosscares.sanity.studio/", "_blank");
-                  }
-                }}
-                onMouseEnter={() => setHoveredIndex(i)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                title={isCollapsed ? item.name : ""}
-                className={`flex justify-between items-center  ${
-                  isCollapsed ? "justify-center p-3 w-fit" : "p-3 w-full "
-                } 
-                  rounded-lg transition-colors
-                  ${
-                    location.pathname.includes(item.path)
-                      ? "bg-primary text-white"
-                      : "text-black/50 hover:bg-primary hover:text-white"
-                  }`}
-              >
-                <div className="flex items-center">
-                  <img
-                    src={
-                      location.pathname.includes(item.path) ||
-                      hoveredIndex === i
-                        ? item.lightIcon
-                        : item.icon
-                    }
-                    alt={item.name}
-                    className="w-5 h-5"
-                  />
-                  {!isCollapsed && (
-                    <span className="ml-1 font-medium whitespace-nowrap">
-                      {item.name}
-                    </span>
-                  )}
-                </div>
-
-                {item.subMenus && (
-                  <div
-                    className={`ml-2 duration-300 ease-in-out ${
-                      isCollapsed || i === 5 ? "hidden" : ""
-                    } ${i === openIndex ? "" : "rotate-180"}`}
-                  >
-                    <IoIosArrowUp />
-                  </div>
-                )}
+          <button
+            onClick={() => setOpenDropdown(!openDropdown)}
+            className="w-full flex items-center justify-between py-3 px-6 rounded-lg hover:bg-cyan-50 transition-colors"
+          >
+            <div className="flex items-center space-x-2">
+              <FaBriefcase className="text-[#213F7D] w-4 h-4" />
+              <span className="text-[#213F7D] text-sm">
+                Switch Organization
+              </span>
+            </div>
+            <IoChevronDownOutline
+              className={`text-[#213F7D] transition-transform ${
+                openDropdown ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+          {openDropdown && (
+            <div className="absolute w-[90%] left-1/2 -translate-x-1/2 bg-white rounded-lg shadow-lg z-50 p-2">
+              <button className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm text-[#545F7D]">
+                Lendsqr
               </button>
+              <button className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm text-[#545F7D]">
+                Irorun
+              </button>
+              <button className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm text-[#545F7D]">
+                Lendstar
+              </button>
+            </div>
+          )}
+        </div>
 
-              <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out
-    ${openIndex === i && item.subMenus ? "ml-10 max-h-[500px]" : "max-h-0"}
-    ${isCollapsed ? "hidden" : ""}`}
-              >
-                <ul className=" text-black/50 mt-3 mb-5 duration-200 ease-in-out transition-all transform cursor-pointer space-y-2">
-                  {item.subMenus?.map((d, i) => {
-                    return (
-                      <div
-                        key={i}
+        {/* Dashboard Link */}
+        <div className={`mb-4 ${isCollapsed ? "mt-28" : ""}`}>
+          <Link
+            to={PRIVATE_PATHS.DASHBOARD}
+            onClick={() => {
+              if (window.innerWidth < 1024) {
+                setIsCollapsed(true);
+              }
+            }}
+            className={`flex items-center ${
+              isCollapsed ? "justify-center hidden lg:block" : "space-x-3"
+            } 
+              py-3 px-6 transition-colors
+              ${
+                location.pathname === PRIVATE_PATHS.DASHBOARD
+                  ? "bg-cyan-50 border-l-4 border-[#39CDCC]"
+                  : "hover:bg-gray-50"
+              }`}
+          >
+            <HiOutlineHome className="w-5 h-5 text-[#213F7D] opacity-60" />
+            {!isCollapsed && (
+              <span className="text-[#213F7D] text-sm">Dashboard</span>
+            )}
+          </Link>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 overflow-y-auto pb-6 custom-scrollbar">
+          {Object.entries(groupedNavItems).map(([category, items]) => (
+            <div key={category} className="mb-6">
+              {!isCollapsed && (
+                <p className="text-xs font-medium text-[#545F7D] mb-2 px-6">
+                  {category}
+                </p>
+              )}
+              <ul className="space-y-1">
+                {items.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  const isHovered = hoveredItem === item.path;
+
+                  // Determine which icon to show
+                  const iconToShow =
+                    isActive || isHovered ? item.onIcon : item.icon;
+
+                  return (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
                         onClick={() => {
-                          navigate(d.path);
+                          if (window.innerWidth < 1024) {
+                            setIsCollapsed(true);
+                          }
                         }}
-                        className={` rounded-lg  py-3 px-6 ${
-                          location.pathname.includes(d.path)
-                            ? "bg-primary text-white"
-                            : "text-black/50 hover:bg-primary hover:text-white"
-                        }`}
+                        onMouseEnter={() => setHoveredItem(item.path)}
+                        onMouseLeave={() => setHoveredItem(null)}
+                        className={`flex items-center ${
+                          isCollapsed
+                            ? "justify-center hidden lg:block"
+                            : "space-x-3"
+                        } 
+                          px-6 py-3 transition-all duration-200
+                          ${
+                            isActive
+                              ? "bg-cyan-50 border-l-4 border-[#39CDCC]"
+                              : "hover:bg-gray-50"
+                          }`}
+                        title={isCollapsed ? item.name : undefined}
                       >
-                        <li className=" list-disc">{d.name}</li>
-                      </div>
-                    );
-                  })}
-                </ul>
-              </div>
-            </li>
-          ))}
-        </ul> */}
-
-        <hr className="border border-primary mt-8" />
-
-        {/* <p className={`text-black/50 text-sm mt-7 ${isCollapsed ? 'hidden' : 'pl-3'}`}>SETTINGS</p> */}
-        {/* <ul className={`text-sm mt-3 space-y-2`}>
-          {settingsItems.map((item:any, i:number) => (
-            <li key={i}>
-              <button
-                onClick={() => {
-                  navigate(item.path);
-                  setIsCollapsed(false);
-                  if (item.name === "Logout Account") {
-                    setIsModalOpen(true);
-                  }
-                }}
-                onMouseEnter={() => setSettingsHoveredIndex(i)}
-                onMouseLeave={() => setSettingsHoveredIndex(null)}
-                title={isCollapsed ? item.name : ""}
-                className={`w-full flex items-center ${
-                  isCollapsed ? "justify-center p-3" : "pl-3 py-3"
-                } 
-                  rounded-lg transition-colors
-                  ${
-                    location.pathname.includes(item.path)
-                      ? "bg-primary text-white"
-                      : "text-black/50 hover:bg-primary hover:text-white"
-                  } ${
-                  item.name === "Logout Account" &&
-                  "text-[#CC8889] hover:text-white"
-                }`}
-              >
-                <img
-                  src={
-                    location.pathname.includes(item.path) ||
-                    settingsHoveredIndex === i
-                      ? item.lightIcon
-                      : item.icon
-                  }
-                  alt={item.name}
-                  className="w-5 h-5"
-                />
-                {!isCollapsed && (
-                  <span className={`ml-1 font-medium whitespace-nowrap `}>
-                    {item.name}
-                  </span>
-                )}
-              </button>
-            </li>
-          ))}
-        </ul> */}
-      </nav>
-
-      {isModalOpen && (
-        <CustomModal
-          onClose={() => setIsModalOpen(false)}
-          className="lg:w-[25%]"
-        >
-          <div className="text-center p-14 space-y-3">
-            <h3 className="font-bold">Are you sure you want to Logout?</h3>
-            <div onClick={handleLogout}>
-              <button className="bg-destructive text-white w-full">
-                Yes, Logout
-              </button>
+                        <img
+                          src={iconToShow}
+                          alt={item.name}
+                          className="w-5 h-5 object-contain"
+                        />
+                        {!isCollapsed && (
+                          <span
+                            className={`text-sm ${
+                              isActive || isHovered
+                                ? "text-[#213F7D]"
+                                : "text-[#545F7D]/70"
+                            }`}
+                          >
+                            {item.name}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-            <div onClick={() => setIsModalOpen(false)}>
-              <button
-                className={` hover:bg-opacity-[80%] ease-in-out duration-300 text-[#3A3A3C] text-sm border-2 border-[#E3EDFF] px-6 py-2 rounded-full w-full bg-[#F2F2F5]`}
-              >
-                No, Cancel
-              </button>
-            </div>
+          ))}
+
+          {/* Logout Button */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <button
+              onClick={handleLogout}
+              className={`flex items-center ${
+                isCollapsed ? "justify-center" : "space-x-3"
+              } 
+                w-full px-3 py-2 rounded-lg transition-colors hover:bg-red-50 group`}
+              title={isCollapsed ? "Logout" : undefined}
+            >
+              <HiOutlineLogout className="w-5 h-5 text-[#213F7D] opacity-60 group-hover:text-red-500" />
+              {!isCollapsed && (
+                <span className="text-base text-[#545F7D] group-hover:text-red-500">
+                  Logout
+                </span>
+              )}
+            </button>
           </div>
-        </CustomModal>
-      )}
-    </aside>
+        </nav>
+
+        {/* Collapse/Expand Button - Desktop Only */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="hidden lg:flex absolute -right-3 top-28 bg-[#39CDCC] rounded-full p-1.5 
+    shadow-md hover:bg-[#2ebaba] transition-colors"
+          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <ChevronLeft
+            className={`w-4 h-4 text-white transition-transform ${
+              isCollapsed ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+      </aside>
+    </>
   );
 };
 

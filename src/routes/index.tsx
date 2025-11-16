@@ -1,4 +1,3 @@
-// import DashboardLayout from "../layout/dashboardLayout";
 import DashboardLayout from "@/layout/dashboardLayout";
 import { PRIVATE_ROUTES, PUBLIC_ROUTES } from "./routes";
 import { useRoutes, useLocation } from "react-router-dom";

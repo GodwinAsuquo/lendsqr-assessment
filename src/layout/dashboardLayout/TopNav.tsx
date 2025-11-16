@@ -1,69 +1,168 @@
-import { useLocation } from 'react-router-dom';
-import notification from '../../assets/icons/notification.svg';
-import { IoChevronDownOutline } from 'react-icons/io5';
-import { FaCalendarAlt } from 'react-icons/fa';
-import pic from '@/assets/images/profileimage.png';
-import { format } from 'date-fns';
+import { useState } from "react";
+import { IoSearchOutline, IoNotificationsOutline } from "react-icons/io5";
+import { HiMenuAlt2 } from "react-icons/hi";
+import { FaCaretDown } from "react-icons/fa";
+import logo from "@/assets/images/logo.png";
 
 interface TopNavProps {
   isCollapsed: boolean;
+  setIsCollapsed: (isCollapsed: boolean) => void;
 }
 
-const TopNav = ({ isCollapsed }: TopNavProps) => {
-  const location = useLocation();
-  const currentPath = location.pathname.toLowerCase().split('/').pop() || '';
+const TopNav = ({ isCollapsed, setIsCollapsed }: TopNavProps) => {
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-const todayFormatted = format(new Date(), 'd MMM');
-
-  // const storedUser = localStorage.getItem('GlosscareAdminUser');
-  // const userDetails = storedUser ? JSON.parse(storedUser) : null;
-
-  // const { firstName, lastName } = userDetails;
-
+  const userDetails = {
+    name: "Adedeji",
+    email: "adedeji@lendsqr.com",
+    avatar: "/avatar.jpg",
+  };
   return (
-    <div className="flex items-center text-sm">
-      <div
-        className={`
-          bg-white py-3 flex left-0 fixed top-0 right-0 
-          items-center h-20 rounded-2xl justify-between
-          md:px-10 px-4 z-40 transition-all duration-300 ease-in-out 
-          ${isCollapsed ? 'lg:ml-[120px]' : 'lg:ml-80 '}
+    <header
+      className={`fixed top-0 right-0 z-30 bg-white shadow-sm transition-all duration-300 w-full
         `}
-      >
-        <h1 className="font-bold text-lg mr-10 truncate w-[20%]">
-          {currentPath.charAt(0).toUpperCase() + currentPath.slice(1)}
-        </h1>
+    >
+      <div className="flex items-center justify-between h-[100px] px-4 lg:px-8">
+        {/* Mobile Menu Toggle & Page Title */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+            aria-label="Toggle menu"
+          >
+            <HiMenuAlt2 className="w-6 h-6 text-[#213F7D]" />
+          </button>
 
-        <div className="flex w-fit items-center space-x-8">
-         
-      
-
-          <img src={notification} alt="search icon" className="bg-[#F6F6F6] w-fit p-2 rounded-full" />
-
-          <div className="flex items-center space-x-3">
-            <p className="font-semibold text-nowrap">Eng (US)</p>
-            <IoChevronDownOutline className="text-gray-400" />
+          <div className="w-32">
+            <img src={logo} alt="logo" />
           </div>
+        </div>
 
-          <div className="space-x-2 flex items-center rounded-full px-3 py-1 bg-[#F6F6F6]">
-            <FaCalendarAlt />
-            <p className="text-nowrap">{todayFormatted}</p>
+        {/* Search Bar - Desktop */}
+        <div className="hidden lg:flex flex-1 max-w-[400px] mx-8">
+          <div className="relative w-full">
+            <input
+              type="text"
+              placeholder="Search for anything"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-10 pl-4 pr-12 rounded-lg border border-gray-200 
+                focus:outline-none focus:border-[#39CDCC] transition-colors
+                placeholder:text-[#545F7D] placeholder:text-sm"
+            />
+            <button
+              className="absolute right-0 top-0 h-10 px-4 bg-[#39CDCC] 
+                rounded-r-lg hover:bg-[#2ebaba] transition-colors"
+              aria-label="Search"
+            >
+              <IoSearchOutline className="w-5 h-5 text-white" />
+            </button>
           </div>
+        </div>
 
-          <div className="flex items-center space-x-4">
-            <div className="relative w-16">
-              <img src={pic} alt="profile image" />
-              {/* <div className="absolute bottom-0 right-1 w-3 h-3 rounded-full bg-[#00B884] border border-[#E1E1E1]"></div> */}
-            </div>
+        {/* Right Section */}
+        <div className="flex items-center gap-3 lg:gap-6">
+          {/* Docs Link - Desktop Only */}
+          <a
+            href="/docs"
+            className="hidden lg:block text-[#213F7D] hover:text-[#39CDCC] 
+              transition-colors text-sm underline"
+          >
+            Docs
+          </a>
 
-            {/* <div className="text-sm">
-              <h4 className="text-nowrap text-[#132050] font-semibold ">{firstName + ' ' + lastName}</h4>
-              <p className="text-[#1320507A]">ADMIN</p>
-            </div> */}
+          {/* Notifications */}
+          <button
+            className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Notifications"
+          >
+            <IoNotificationsOutline className="w-6 h-6 text-[#213F7D]" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+
+          {/* User Profile Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowUserDropdown(!showUserDropdown)}
+              className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-full bg-[#39CDCC] flex items-center justify-center">
+                <span className="text-white font-medium">
+                  {userDetails.name.charAt(0)}
+                </span>
+              </div>
+              <span className="hidden lg:block text-[#213F7D] font-medium">
+                {userDetails.name}
+              </span>
+              <FaCaretDown
+                className={`hidden lg:block text-[#213F7D] transition-transform 
+                  ${showUserDropdown ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showUserDropdown && (
+              <div
+                className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg 
+                border border-gray-100 py-2 z-50"
+              >
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <p className="text-sm font-medium text-[#213F7D]">
+                    {userDetails.name}
+                  </p>
+                  <p className="text-xs text-[#545F7D] mt-1">
+                    {userDetails.email}
+                  </p>
+                </div>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-[#545F7D] 
+                  hover:bg-gray-50 transition-colors"
+                >
+                  View Profile
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-[#545F7D] 
+                  hover:bg-gray-50 transition-colors"
+                >
+                  Settings
+                </button>
+                <div className="border-t border-gray-100 mt-2 pt-2">
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-red-500 
+                    hover:bg-red-50 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Mobile Search Bar */}
+      <div className="lg:hidden px-4 pb-4">
+        <div className="relative w-full">
+          <input
+            type="text"
+            placeholder="Search for anything"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-10 pl-4 pr-12 rounded-lg border border-gray-200 
+              focus:outline-none focus:border-[#39CDCC] transition-colors
+              placeholder:text-[#545F7D] placeholder:text-sm"
+          />
+          <button
+            className="absolute right-0 top-0 h-10 px-4 bg-[#39CDCC] 
+              rounded-r-lg hover:bg-[#2ebaba] transition-colors"
+            aria-label="Search"
+          >
+            <IoSearchOutline className="w-5 h-5 text-white" />
+          </button>
+        </div>
+      </div>
+    </header>
   );
 };
 

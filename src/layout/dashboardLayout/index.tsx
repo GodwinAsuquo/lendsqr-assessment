@@ -1,24 +1,29 @@
-import { type ReactNode, useState } from 'react';
-import SideNav from './SideNav';
-import TopNav from './TopNav';
+import { useState, type ReactNode } from "react";
+import SideNav from "./SideNav";
+import TopNav from "./TopNav";
 
-interface DashboardProps {
-  children?: ReactNode;
+interface DashboardLayoutProps {
+  children: ReactNode;
 }
 
-const DashboardLayout = ({ children }: DashboardProps) => {
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="w-screen h-screen ">
-      <TopNav isCollapsed={isCollapsed} />
+    <div className="min-h-screen bg-[#FBFBFB]">
+      {/* Side Navigation */}
       <SideNav isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-      <div
-        className={`mx-auto mt-32 transition-all mr-10 duration-300 ease-in-out
-          ${isCollapsed ? 'lg:ml-[120px]' : 'lg:ml-80'}`}
+
+      {/* Top Navigation */}
+      <TopNav isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+
+      {/* Main Content Area */}
+      <main
+        className={`transition-all duration-300 ease-in-out pt-[160px] lg:pt-[120px]
+          ${isCollapsed ? "lg:ml-[90px]" : "lg:ml-[283px]"}`}
       >
-        {children}
-      </div>
+        <div className=" min-h-[calc(100vh-120px)]">{children}</div>
+      </main>
     </div>
   );
 };
