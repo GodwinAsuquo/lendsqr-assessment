@@ -3,6 +3,11 @@ import { IoSearchOutline, IoNotificationsOutline } from "react-icons/io5";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { FaCaretDown } from "react-icons/fa";
 import logo from "@/assets/images/logo.png";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface TopNavProps {
   isCollapsed: boolean;
@@ -10,7 +15,6 @@ interface TopNavProps {
 }
 
 const TopNav = ({ isCollapsed, setIsCollapsed }: TopNavProps) => {
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const userDetails = {
@@ -18,11 +22,9 @@ const TopNav = ({ isCollapsed, setIsCollapsed }: TopNavProps) => {
     email: "adedeji@lendsqr.com",
     avatar: "/avatar.jpg",
   };
+
   return (
-    <header
-      className={`fixed top-0 right-0 z-30 bg-white shadow-sm transition-all duration-300 w-full
-        `}
-    >
+    <header className="fixed top-0 right-0 z-30 bg-white shadow-sm transition-all duration-300 w-full">
       <div className="flex items-center justify-between h-[100px] px-4 lg:px-8">
         {/* Mobile Menu Toggle & Page Title */}
         <div className="flex items-center gap-4">
@@ -78,66 +80,50 @@ const TopNav = ({ isCollapsed, setIsCollapsed }: TopNavProps) => {
             aria-label="Notifications"
           >
             <IoNotificationsOutline className="w-6 h-6 text-[#213F7D]" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
 
           {/* User Profile Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setShowUserDropdown(!showUserDropdown)}
-              className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-10 h-10 rounded-full bg-[#39CDCC] flex items-center justify-center">
-                <span className="text-white font-medium">
-                  {userDetails.name.charAt(0)}
-                </span>
-              </div>
-              <span className="hidden lg:block text-[#213F7D] font-medium">
-                {userDetails.name}
-              </span>
-              <FaCaretDown
-                className={`hidden lg:block text-[#213F7D] transition-transform 
-                  ${showUserDropdown ? "rotate-180" : ""}`}
-              />
-            </button>
-
-            {/* Dropdown Menu */}
-            {showUserDropdown && (
-              <div
-                className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg 
-                border border-gray-100 py-2 z-50"
-              >
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-[#213F7D]">
-                    {userDetails.name}
-                  </p>
-                  <p className="text-xs text-[#545F7D] mt-1">
-                    {userDetails.email}
-                  </p>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-10 h-10 rounded-full bg-[#39CDCC] flex items-center justify-center">
+                  <span className="text-white font-medium">
+                    {userDetails.name.charAt(0)}
+                  </span>
                 </div>
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-[#545F7D] 
-                  hover:bg-gray-50 transition-colors"
-                >
+                <span className="hidden lg:block text-[#213F7D] font-medium">
+                  {userDetails.name}
+                </span>
+                <FaCaretDown className="hidden lg:block text-[#213F7D]" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="w-64 p-0 bg-white border border-gray-100 shadow-lg"
+            >
+              <div className="px-4 py-3 border-b border-gray-100">
+                <p className="text-sm font-medium text-[#213F7D]">
+                  {userDetails.name}
+                </p>
+                <p className="text-xs text-[#545F7D] mt-1">
+                  {userDetails.email}
+                </p>
+              </div>
+              <div className="py-2">
+                <button className="w-full text-left px-4 py-2 text-sm text-[#545F7D] hover:bg-gray-50 transition-colors">
                   View Profile
                 </button>
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-[#545F7D] 
-                  hover:bg-gray-50 transition-colors"
-                >
+                <button className="w-full text-left px-4 py-2 text-sm text-[#545F7D] hover:bg-gray-50 transition-colors">
                   Settings
                 </button>
-                <div className="border-t border-gray-100 mt-2 pt-2">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-500 
-                    hover:bg-red-50 transition-colors"
-                  >
-                    Logout
-                  </button>
-                </div>
               </div>
-            )}
-          </div>
+              <div className="border-t border-gray-100">
+                <button className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors">
+                  Logout
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 

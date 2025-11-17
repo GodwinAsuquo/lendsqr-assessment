@@ -89,7 +89,7 @@ export const PRIVATE_ROUTES: AppRoute[] = [
     element: <Users />,
   },
   {
-    path: USER_DETAILS, // /users/:id
+    path: USER_DETAILS, 
     element: <UserDetails />,
   },
   {

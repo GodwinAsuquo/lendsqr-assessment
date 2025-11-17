@@ -1,5 +1,8 @@
-
-
+import type { NavItem } from "@/types";
+import usersIcon from '@/assets/icons/users/users.svg';
+import activeUsers from "@/assets/icons/users/activeUsers.svg";
+import usersWithLoans from "@/assets/icons/users/usersWithLoans.svg";
+import usersWithSavings from "@/assets/icons/users/usersWithSavings.svg";
 import users from "@/assets/icons/users.svg";
 import onUsers from "@/assets/icons/onUsers.svg";
 import Guarantors from "@/assets/icons/Guarantors.svg";
@@ -42,7 +45,6 @@ import AuditLogs from "@/assets/icons/AuditLogs.svg";
 import onAuditLogs from "@/assets/icons/onAuditLogs.svg";
 import SystemsMessages from "@/assets/icons/SystemsMessages.svg";
 import onSystemsMessages from "@/assets/icons/onSystemsMessages.svg";
-import type { NavItem } from "@/types";
 
 // Page paths
 export const PUBLIC_PATHS = {
@@ -251,3 +253,83 @@ export interface StatsCard {
   bgColor: string;
   iconColor: string;
 }
+
+export const statsCards = [
+    {
+      icon: usersIcon,
+      title: "USERS",
+      value: "2,453",
+    },
+    {
+      icon: activeUsers,
+      title: "ACTIVE USERS",
+      value: "2,453",
+    },
+    {
+      icon: usersWithLoans,
+      title: "USERS WITH LOANS",
+      value: "12,453",
+    },
+    {
+      icon: usersWithSavings,
+      title: "USERS WITH SAVINGS",
+      value: "102,453",
+    },
+  ];
+
+  export const mockUsers: User[] = [
+    {
+      id: "1",
+      organization: "Lendsqr",
+      username: "Adedeji",
+      email: "adedeji@lendsqr.com",
+      phoneNumber: "08078903721",
+      dateJoined: "May 15, 2020 10:00 AM",
+      status: "Inactive",
+    },
+    {
+      id: "2",
+      organization: "Irorun",
+      username: "Debby Ogana",
+      email: "debby2@irorun.com",
+      phoneNumber: "08160780928",
+      dateJoined: "Apr 30, 2020 10:00 AM",
+      status: "Pending",
+    },
+    {
+      id: "3",
+      organization: "Lendstar",
+      username: "Grace Effiom",
+      email: "grace@lendstar.com",
+      phoneNumber: "07060780922",
+      dateJoined: "Apr 30, 2020 10:00 AM",
+      status: "Blacklisted",
+    },
+    {
+      id: "4",
+      organization: "Lendsqr",
+      username: "Tosin Dokunmu",
+      email: "tosin@lendsqr.com",
+      phoneNumber: "07003309226",
+      dateJoined: "Apr 10, 2020 10:00 AM",
+      status: "Pending",
+    },
+    {
+      id: "5",
+      organization: "Lendstar",
+      username: "Grace Effiom",
+      email: "grace@lendstar.com",
+      phoneNumber: "07060780922",
+      dateJoined: "Apr 30, 2020 10:00 AM",
+      status: "Active",
+    },
+  ];
+
+    export const tabs = [
+      { id: "general", label: "General Details" },
+      { id: "documents", label: "Documents" },
+      { id: "bank", label: "Bank Details" },
+      { id: "loans", label: "Loans" },
+      { id: "savings", label: "Savings" },
+      { id: "app", label: "App and System" },
+    ];
